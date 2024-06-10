@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @StateObject var loginVM = LoginViewModel.shared
+    @ObservedObject var loginVM : LoginViewModel
     @State private var showMessage = false
         
     var body: some View {
@@ -158,5 +158,5 @@ struct LoginView: View {
 }
 
 #Preview {
-    LoginView()
+    LoginView(loginVM: LoginViewModel())
 }

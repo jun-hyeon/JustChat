@@ -7,7 +7,6 @@
 
 import Foundation
 import Alamofire
-import UIKit
 
 enum KeyError: Error{
     case error

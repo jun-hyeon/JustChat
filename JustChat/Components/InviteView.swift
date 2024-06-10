@@ -26,11 +26,11 @@ struct InviteView: View {
                             Capsule()
                                 .stroke(.black, lineWidth: 1.0)
                         }
-                        .onSubmit {
-                            print("화면 입력: ", searchVM.searchModel.keyword)
+                        .onChange(of: searchVM.searchModel.keyword){
                             Task{
                                 await searchVM.fetchSearchUser()
                             }
+
                         }
                 }
                 .padding()

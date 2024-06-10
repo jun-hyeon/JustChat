@@ -17,7 +17,9 @@ class ChatListViewModel: ObservableObject{
     static let shared = ChatListViewModel()
     
     func loadChatList() async -> Result<ChatListResponse, Error>{
+        
         do{
+            
             let params = await networkManager.convertToParameters(model: chatListModel)
             let response = try await networkManager.request(method: .get, path: "chat/list", params: params, of: ChatListResponse.self)
             

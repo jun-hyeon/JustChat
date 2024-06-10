@@ -14,12 +14,10 @@ struct ContentView: View {
     var body: some View {
         
         if loginVM.isLogin == .login{
-            MainView()
+            MainView(loginVM: loginVM)
         }else{
-            LoginView()
+            LoginView(loginVM: loginVM)
         }
-        
-//  MainView()
     }
 }
 

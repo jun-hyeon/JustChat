@@ -12,18 +12,64 @@ struct UserListView: View {
     var body: some View {
         NavigationStack{
             ScrollView{
+                HStack{
+                    
+                    AsyncImage(url: URL(string:"")) { image in
+                    } placeholder: {
+                        Image(systemName: "person.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width:48, height: 48)
+                            .clipShape(Circle())
+                            .overlay{
+                                Circle().stroke(.white, lineWidth: 2)
+                            }
+                            .shadow(radius: 6)
+                            .padding()
+                    }
+                    
+                    
+                    VStack(alignment: .leading){
+                        Text("Amir-Zhen")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.black)
+                        
+                        Text("As long as it is a payment")
+                            .font(.caption)
+                            .fontWeight(.thin)
+                            .foregroundStyle(.gray)
+                    }
+                    
+                    Spacer()
+                    
+                    Button{
+                        
+                    }label:{
+                        Image(systemName: "magnifyingglass")
+                            .resizable()
+                            .scaledToFit()
+                            
+                            .frame(width: 26, height: 26)
+                            .padding()
+                            .foregroundStyle(.black)
+                    }
+                }//HStack
+                
+                
+                
                 ForEach(searchVM.searchList, id: \.self) { member in
             
-                    NavigationLink{
-                        
-                    }label: {
-                        UserListItem(memberData: member)
-                    }
-                    .buttonStyle(.plain)
-                    
+                        NavigationLink{
+                            
+                        }label: {
+                            UserListItem(memberData: member)
+                            
+                        }
+                        .buttonStyle(PlainButtonStyle())
                 }
-                .padding()
             }
+            .listStyle(.plain)
         }
         .onAppear{
             Task{

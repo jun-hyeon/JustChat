@@ -14,9 +14,9 @@ struct Message: Codable, Hashable{
 
 
 struct ChattingView: View {
+    
     @State var str = ""
     @State private var messages = [
-        
                         Message(currentUser: true, msg: "Helloaaaaaasdfasdfasdfasdfasdfasdfasdfasdf"),
                         
                         Message(currentUser: false, msg: "bbbcv,xmn asdm,.dfhnjkdsm,qafnkl;asdhnvm,zxc f,;asddmh"),
@@ -24,12 +24,14 @@ struct ChattingView: View {
                         Message(currentUser: true, msg: "Are you Okay?"),
                         
                         Message(currentUser: false, msg:"Yes")
-                        
-                            ]
+                        ]
     
     var body: some View {
+        
         NavigationStack{
+            
             ScrollView{
+                
                 ForEach(messages, id: \.self){ message in
                     
                     VStack{

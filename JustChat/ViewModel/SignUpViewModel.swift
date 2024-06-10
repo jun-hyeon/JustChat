@@ -13,7 +13,6 @@ class SignUpViewModel: ObservableObject{
     
     @Published var registerModel : RegisterModel = RegisterModel(memberID: "", memberPwd: "", memberName: "", nickName: "")
     
-    
     private let networkManager = NetworkManager.shared
     
     func signUp(image: UIImage) async{
@@ -53,6 +52,7 @@ class SignUpViewModel: ObservableObject{
     }
     
     private func imageUpload(data: Data) async -> Result<FileUploadResponse, Error>{
+        
         do
         {
             let response = try await networkManager.formDataRequest(data: data, path: "file/upload", of: FileUploadResponse.self)
@@ -64,6 +64,7 @@ class SignUpViewModel: ObservableObject{
     }
     
     private func imageDownload(key: String) async -> Result<FileDownloadResponse,Error>{
+        
         do{
             let params = await networkManager.convertToParameters(model: FileDownloadModel(key: key))
             let response = try await networkManager.request(method: .post, path: "file/download", params: params, of: FileDownloadResponse.self)
@@ -76,6 +77,7 @@ class SignUpViewModel: ObservableObject{
     }
     
     private func imageToUrl(data: Data) async -> Result<String,Error>{
+        
         do{
             // upload data
             let key = try await imageUpload(data: data).get().key

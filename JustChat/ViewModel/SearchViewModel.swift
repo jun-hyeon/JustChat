@@ -18,11 +18,10 @@ class SearchViewModel: ObservableObject{
     
     //유저 검색
     func searchUser() async -> Result<SearchResponse, Error>{
+        
         do{
             let params = await networkManager.convertToParameters(model: self.searchModel)
             print("유저검색 파라미터: \(String(describing: params))")
-            
-            
             
             let response = try await networkManager.request(method: .get, path: "member/list", params: params, of: SearchResponse.self)
 //            let response = try await networkManager.testRequest(method: .get, path: "member/list", params: params)

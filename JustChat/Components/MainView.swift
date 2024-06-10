@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject var loginVM = LoginViewModel.shared
+    @ObservedObject var loginVM : LoginViewModel
     @State var selection = "chat"
     
     var body: some View {
@@ -26,9 +26,9 @@ struct MainView: View {
                     .tabItem{
                         VStack{
                             Image(systemName: "person.fill")
-                            Text("User")
+                            Text("Users")
                         }
-                    }
+                    }.tag("users")
                 
                 SettingView()
                     .tabItem {
@@ -47,5 +47,5 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView()
+    MainView(loginVM: LoginViewModel())
 }
