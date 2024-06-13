@@ -21,6 +21,7 @@ struct LoginView: View {
         }else{
             
             NavigationStack{
+                
                 ScrollView{
                     
                     VStack {

@@ -12,8 +12,5 @@ class SettingManager : ObservableObject{
     
     static let shared = SettingManager()
     
-    
-    
-    
-    
+
 }

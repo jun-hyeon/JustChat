@@ -40,7 +40,7 @@ struct MainView: View {
             }
         }
         .onAppear{
-            let data = loginVM.fetchUserInfo()
+            let data = loginVM.currentUserInfo()
             print("유저정보: \(data)")
         }
     }

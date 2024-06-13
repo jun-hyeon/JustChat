@@ -10,23 +10,30 @@ import SwiftUI
 struct UserListView: View {
     @StateObject private var searchVM = SearchViewModel.shared
     var body: some View {
+        
         NavigationStack{
+            
             ScrollView{
+            
                 HStack{
                     
                     AsyncImage(url: URL(string:"")) { image in
+                        image
+                            .resizable()
+                            .scaledToFill()
+                        
                     } placeholder: {
                         Image(systemName: "person.fill")
                             .resizable()
                             .scaledToFit()
-                            .frame(width:48, height: 48)
-                            .clipShape(Circle())
-                            .overlay{
-                                Circle().stroke(.white, lineWidth: 2)
-                            }
-                            .shadow(radius: 6)
-                            .padding()
-                    }
+                        
+                    }.frame(width:48, height: 48)
+                        .clipShape(Circle())
+                        .overlay{
+                            Circle().stroke(.white, lineWidth: 2)
+                        }
+                        .shadow(radius: 6)
+                        .padding()
                     
                     
                     VStack(alignment: .leading){
@@ -44,6 +51,7 @@ struct UserListView: View {
                     Spacer()
                     
                     Button{
+                        //추후 추가할지 안할지 논의
                         
                     }label:{
                         Image(systemName: "magnifyingglass")
@@ -55,8 +63,6 @@ struct UserListView: View {
                             .foregroundStyle(.black)
                     }
                 }//HStack
-                
-                
                 
                 ForEach(searchVM.searchList, id: \.self) { member in
             

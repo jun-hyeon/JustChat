@@ -12,11 +12,13 @@ struct ChatListView: View {
     @State private var isShow = false
     var url = ""
     var body: some View {
+        
         NavigationStack{
+            
             ZStack(alignment: .bottomTrailing){
+                
                 ScrollView{
                    
-                    
                     ForEach(chatListVM.chatList, id: \.self){ chatData in
                         NavigationLink{
                             ChattingView()
@@ -24,8 +26,7 @@ struct ChatListView: View {
                             ChatListItem(chatData: chatData)
                         }
                         .buttonStyle(.plain)
-                        
-                        
+                    
                     }
                     .listRowSeparator(.hidden)
                     

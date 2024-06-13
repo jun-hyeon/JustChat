@@ -36,26 +36,5 @@ struct LoginData: Codable {
         case profileFile = "profile_file"
     }
     
-    func encode() -> Data? {
-        let encoder = JSONEncoder()
-        
-        if let encoded = try? encoder.encode(self) {
-            return encoded
-        } else {
-            return nil
-        }
-    }
-    
-    // AppStorage에서 Data값을 가져오면, User 구조체로 다시 변환해 화면에 뿌려줄 수 있음.
-    static func decode(userData: Data) -> LoginData? {
-        let decoder = JSONDecoder()
-        
-        if let user = try? decoder.decode(LoginData.self, from: userData) {
-            return user
-        } else {
-            return nil
-        }
-    }
-
 }
 

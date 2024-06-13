@@ -13,19 +13,23 @@ struct SettingView: View {
             VStack(alignment: .leading){
                     HStack{
                         AsyncImage(url: URL(string:"")) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
                             
                         } placeholder: {
                             Image(systemName: "person.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width:90, height: 90)
-                                .clipShape(Circle())
-                                .overlay{
-                                    Circle().stroke(.white, lineWidth: 2)
-                                }
-                                .shadow(radius: 6)
-                                .padding()
+                                
+                        }//AsyncImage
+                        .frame(width:90, height: 90)
+                        .clipShape(Circle())
+                        .overlay{
+                            Circle().stroke(.white, lineWidth: 2)
                         }
+                        .shadow(radius: 6)
+                        .padding()
                         
                         VStack(alignment: .leading){
                             Text("Amir-Zhen")

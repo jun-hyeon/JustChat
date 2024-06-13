@@ -33,12 +33,14 @@ class ChatListViewModel: ObservableObject{
     
     @MainActor
     func fetchList() async {
+        
         let result = await loadChatList()
+        
         switch result{
+            
         case .success(let response):
             
             print(response.message)
-            
             
             if response.success{
                 chatList = response.data.list

@@ -19,6 +19,7 @@ struct CreateChatModel: Codable {
         case inviteMember = "invite_member"
     }
 }
+
 // MARK: - CreateChatResponseModel
 struct CreateChatResponse: Codable {
     let success: Bool

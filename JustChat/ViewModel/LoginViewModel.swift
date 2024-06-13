@@ -21,7 +21,7 @@ class LoginViewModel : ObservableObject{
     @AppStorage("memberName") private var memberName : String = ""
     @AppStorage("regDate") private var regDate : String = ""
     @AppStorage("profileFile") private var profileFile : String = ""
-
+    @AppStorage("isLoggedIn") private var isLoggedIn : Bool = false
     
     static let shared = LoginViewModel()
     private let networkManager = NetworkManager.shared
@@ -55,6 +55,7 @@ class LoginViewModel : ObservableObject{
                 }
                  
                 isLogin = .login
+                isLoggedIn = false
                 print(loginData)
                  
                  self.nickName = loginData.nickName
@@ -67,12 +68,14 @@ class LoginViewModel : ObservableObject{
                  }
                  
                 isLoading = false
-                 
-                 
                 
+                 
              }else{
+                 
                  isLogin = .logout
+                 isLoggedIn = false
                  isLoading = false
+                 
              }
             
         }catch{
@@ -80,7 +83,7 @@ class LoginViewModel : ObservableObject{
         }
     }
     
-    func fetchUserInfo() -> LoginData{
+    func currentUserInfo() -> LoginData{
         return LoginData(memberID: self.memberId, memberName: self.memberName, nickName: self.nickName, regDate: self.regDate, profileFile: self.profileFile)
     }
     
