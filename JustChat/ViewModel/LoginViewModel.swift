@@ -21,7 +21,6 @@ class LoginViewModel : ObservableObject{
     @AppStorage("memberName") private var memberName : String = ""
     @AppStorage("regDate") private var regDate : String = ""
     @AppStorage("profileFile") private var profileFile : String = ""
-    @AppStorage("isLoggedIn") private var isLoggedIn : Bool = false
     
     static let shared = LoginViewModel()
     private let networkManager = NetworkManager.shared

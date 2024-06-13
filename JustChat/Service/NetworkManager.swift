@@ -22,8 +22,6 @@ actor NetworkManager{
     private var loginState : LoginState = .logout
     
     
-//    private let baseurl = "http://13.124.6.116:3380/"
-//    private let baseurl = "http://api.v-market.life/"
     
     private let headers: HTTPHeaders = [
         "Content-Type" : "application/json",
