@@ -54,7 +54,7 @@ class LoginViewModel : ObservableObject{
                 }
                  
                 isLogin = .login
-                isLoggedIn = false
+                
                 print(loginData)
                  
                  self.nickName = loginData.nickName
@@ -72,7 +72,7 @@ class LoginViewModel : ObservableObject{
              }else{
                  
                  isLogin = .logout
-                 isLoggedIn = false
+                 
                  isLoading = false
                  
              }
