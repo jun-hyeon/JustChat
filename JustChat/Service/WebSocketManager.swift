@@ -7,19 +7,27 @@
 
 import Foundation
 
-class WebsocketManager: ObservableObject {
+class WebsocketManager: ObservableObject{
     
-    @Published var messages = [String]()
+    @Published var messages = [ChatModel]()
+    
+    static let shared = WebsocketManager()
     
     private var webSocketTask: URLSessionWebSocketTask?
     private var isActive = false
-    init() async {
-        await self.connect()
+
+    init(){
+        
     }
     
-    private func connect() async {
-        guard let url = URL(string: "ws://3.35.16.83:2000") else { return }
-        let request = URLRequest(url: url)
+     func connect(channerNo: String, memberId: String) async{
+        
+        guard let url = URL(string: "ws://172.30.1.3:3380") else { return }
+        
+        var request = URLRequest(url: url)
+        request.addValue("\(memberId)", forHTTPHeaderField: "member_id")
+        request.addValue("\(channerNo)", forHTTPHeaderField: "channer_no")
+        
         webSocketTask = URLSession.shared.webSocketTask(with: request)
         webSocketTask?.resume()
         isActive = true
@@ -27,40 +35,31 @@ class WebsocketManager: ObservableObject {
         
     }
     
-    private func receiveMessage() async{
-//        webSocketTask?.receive { result in
-//            switch result {
-//
-//            case .failure(let error):
-//                print(error.localizedDescription)
-//
-//            case .success(let message):
-//                print("성공")
-//                switch message {
-//
-//                case .string(let text):
-//                    print("받아오기 성공!",message)
-//                    do{
-//                        self.messages.append(text)
-//                    }
-//                case .data(_):
-//                    // Handle binary data
-//                    break
-//                @unknown default:
-//                    break
-//                }
-//            }
-//        }
-        
+     @MainActor
+     func receiveMessage() async {
             do{
                 let message = try await webSocketTask?.receive()
                 
                 switch message{
+                    
                 case .string(let str):
-                    self.messages.append(str)
-                    print(str)
+                    
+                    print("문자열 타입입니다.", str)
+                    guard let data = str.data(using: .utf8) else {
+                        print("String to data Error")
+                        return
+                    }
+                    
+                    guard let decoded = try? JSONDecoder().decode(ChatModel.self, from: data) else {
+                        print("Decode Error")
+                        return
+                    }
+                    
+                    self.messages.append(decoded)
+                    
                     
                 case .data(let data):
+                    print("data 타입입니다.")
                     print(data)
                     
                 case .none:
@@ -77,10 +76,17 @@ class WebsocketManager: ObservableObject {
     }
     
     
-    func sendMessage(_ message: String) {
-        guard message.data(using: .utf8) != nil else { return }
-        webSocketTask?.send(.string(message)) { error in
+    func sendMessage(_ message: String, memberId: String) {
+        
+        let data = ChatModel(memberId: memberId, message: message)
+        
+        guard let encoded = try? JSONEncoder().encode(data) else {
+            print("Encoding Error")
+            return
+        }
+        webSocketTask?.send(.data(encoded)) { error in
             if let error = error {
+                print("전송에러")
                 print(error.localizedDescription)
             }
         }

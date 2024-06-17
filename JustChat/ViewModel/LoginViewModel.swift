@@ -13,18 +13,16 @@ enum LoginState{
 
 
 import Foundation
-import SwiftUI
+
+import GoogleSignIn
+import GoogleSignInSwift
+
+
 class LoginViewModel : ObservableObject{
-    
-    @AppStorage("nickName") private var nickName : String = ""
-    @AppStorage("memberId") private var memberId : String = ""
-    @AppStorage("memberName") private var memberName : String = ""
-    @AppStorage("regDate") private var regDate : String = ""
-    @AppStorage("profileFile") private var profileFile : String = ""
     
     static let shared = LoginViewModel()
     private let networkManager = NetworkManager.shared
-    
+    private let userManager = UserManager.shared
     
     @Published var loginModel : LoginModel = LoginModel(memberID: "", memberPwd: "")
     @Published var isLogin : LoginState = .logout
@@ -57,14 +55,7 @@ class LoginViewModel : ObservableObject{
                 
                 print(loginData)
                  
-                 self.nickName = loginData.nickName
-                 self.memberId = loginData.memberID
-                 self.regDate = loginData.regDate
-                 self.memberName = loginData.memberName
-                 
-                 if let profileImage = loginData.profileFile{
-                     self.profileFile = profileImage
-                 }
+                 userManager.storeUser(loginData: loginData)
                  
                 isLoading = false
                 
@@ -82,16 +73,25 @@ class LoginViewModel : ObservableObject{
         }
     }
     
-    func currentUserInfo() -> LoginData{
-        return LoginData(memberID: self.memberId, memberName: self.memberName, nickName: self.nickName, regDate: self.regDate, profileFile: self.profileFile)
+    func googleLogin(){
+        guard let presentingViewController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.rootViewController else {return}
+        
+        GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { signInResult, error in
+            guard let result = signInResult else {
+                return
+            }
+            
+            guard let profile = result.user.profile else {return}
+            
+            let data = LoginData(memberID: profile.email, memberName: profile.name, nickName: profile.name, regDate: "\(Date())", profileFile: "\(String(describing: profile.imageURL(withDimension: 100)))")
+            print(data)
+        }
     }
     
+    
     func logOut(){
-        self.nickName = ""
-        self.memberId = ""
-        self.regDate = ""
-        self.memberName = ""
-        self.profileFile = ""
+        userManager.removeUser()
+        isLogin = .logout
     }
     
 }

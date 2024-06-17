@@ -14,7 +14,7 @@ struct MainView: View {
     var body: some View {
         VStack{
             TabView {
-                ChatListView()
+                ChatListView(loginVM: loginVM)
                     .tabItem {
                         VStack{
                             Image(systemName:  selection == "chat" ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right")
@@ -40,7 +40,7 @@ struct MainView: View {
             }
         }
         .onAppear{
-            let data = loginVM.currentUserInfo()
+            let data = UserManager.shared.getCurrentUser()
             print("유저정보: \(data)")
         }
     }

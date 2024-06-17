@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct ChatListView: View {
+    
     @StateObject private var chatListVM = ChatListViewModel.shared
+    @ObservedObject var loginVM : LoginViewModel
+    
     @State private var isShow = false
+    
     var url = ""
     var body: some View {
         
@@ -21,7 +25,7 @@ struct ChatListView: View {
                    
                     ForEach(chatListVM.chatList, id: \.self){ chatData in
                         NavigationLink{
-                            ChattingView()
+                            ChattingView(chatData: chatData)
                         }label:{
                             ChatListItem(chatData: chatData)
                         }
@@ -48,6 +52,8 @@ struct ChatListView: View {
             }//ZStack
         }//NavigatioNStack
         .onAppear{
+            chatListVM.chatListModel.memberID =  UserManager.shared.getCurrentUser().memberID
+            print("nae,",UserManager.shared.getCurrentUser().memberID)
             Task{
                  await chatListVM.fetchList()
             }
@@ -58,5 +64,5 @@ struct ChatListView: View {
 }
 
 #Preview {
-    ChatListView()
+    ChatListView(loginVM: LoginViewModel())
 }

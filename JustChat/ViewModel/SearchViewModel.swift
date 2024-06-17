@@ -16,9 +16,10 @@ class SearchViewModel: ObservableObject{
     static let shared = SearchViewModel()
     private let networkManager = NetworkManager.shared
     private let loginVM = LoginViewModel.shared
+    private let userManager = UserManager.shared
     
     //유저 검색
-    func searchUser() async -> Result<SearchResponse, Error>{
+    private func searchUser() async -> Result<SearchResponse, Error>{
         
         do{
             let params = await networkManager.convertToParameters(model: self.searchModel)
@@ -48,7 +49,7 @@ class SearchViewModel: ObservableObject{
             
             if response.success{
                 
-                let currentUser = loginVM.currentUserInfo()
+                let currentUser = userManager.getCurrentUser()
                 print(currentUser.memberName)
                 
                 //검색리스트

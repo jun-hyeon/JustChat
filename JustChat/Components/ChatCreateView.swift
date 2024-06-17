@@ -26,6 +26,8 @@ struct ChatCreateView: View {
     @State private var roomPwdError = true
     @State private var inviteMemberError = true
     
+    private let userData = UserManager.shared.getCurrentUser()
+    
     var body: some View {
         
         NavigationStack{
@@ -126,7 +128,8 @@ struct ChatCreateView: View {
                             }
                             createChatVM.createChatModel.channerName = roomName
                             createChatVM.createChatModel.inviteMember = selectedMember.map{$0.memberID}
-                            
+                            createChatVM.createChatModel.memberID =
+                            userData.memberID
                             
                             Task{
                                 print(createChatVM.createChatModel)

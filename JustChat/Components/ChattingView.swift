@@ -7,24 +7,15 @@
 
 import SwiftUI
 
-struct Message: Codable, Hashable{
-    var currentUser : Bool
-    var msg : String
-}
-
 
 struct ChattingView: View {
+    private let loginData = UserManager.shared.getCurrentUser()
+    @StateObject var wsManager =  WebsocketManager.shared
     
-    @State var str = ""
-    @State private var messages = [
-                        Message(currentUser: true, msg: "Helloaaaaaasdfasdfasdfasdfasdfasdfasdfasdf"),
-                        
-                        Message(currentUser: false, msg: "bbbcv,xmn asdm,.dfhnjkdsm,qafnkl;asdhnvm,zxc f,;asddmh"),
-                        
-                        Message(currentUser: true, msg: "Are you Okay?"),
-                        
-                        Message(currentUser: false, msg:"Yes")
-                        ]
+    @State private var text = ""
+    
+    var chatData: ChatData
+    
     
     var body: some View {
         
@@ -32,12 +23,11 @@ struct ChattingView: View {
             
             ScrollView{
                 
-                ForEach(messages, id: \.self){ message in
+                ForEach(wsManager.messages, id: \.self){ message in
                     
                     VStack{
-                        MessageCell(currentUser: message.currentUser, msg: message.msg)
+                        MessageCell(chatModel: message, loginData: loginData)
                             .padding()
-
                     }//VStack
                     
                 }//ForEach
@@ -55,7 +45,7 @@ struct ChattingView: View {
                 
                 Spacer()
                 
-                TextField("Chat", text: $str)
+                TextField("Chat", text: $text)
                     .padding(8)
                     
                     .overlay{
@@ -67,6 +57,11 @@ struct ChattingView: View {
                     
                 Button{
                     //send message func
+                    Task{
+                        wsManager.sendMessage(text, memberId: loginData.memberID)
+                        await wsManager.receiveMessage()
+                        print(wsManager.messages)
+                    }
                     
                 }label:{
                     Image(systemName: "paperplane")
@@ -98,24 +93,24 @@ struct ChattingView: View {
                 }
             }
         }
-        
         .onAppear{
             Task{
-//                let socketManager = await WebsocketManager()
-//                messages = socketManager.messages
+                await wsManager.connect(channerNo:chatData.channerNo,memberId: loginData.memberID)
+                await wsManager.receiveMessage()
             }
         }
+        
     }
 }
 
 struct MessageCell: View {
-    var currentUser : Bool
-    var msg : String
+    var chatModel: ChatModel
+    var loginData: LoginData
     //후에 이미지 추가
     
     var body: some View {
         
-        if currentUser {
+        if chatModel.memberId ==  loginData.memberID{
             
             HStack(alignment: .top){
                 
@@ -123,7 +118,7 @@ struct MessageCell: View {
                 
                 VStack(alignment: .trailing){
                     
-                    Text(msg)
+                    Text(chatModel.message)
                         .foregroundStyle(.white)
                         .fontWeight(.semibold)
                         .lineLimit(17)
@@ -139,14 +134,17 @@ struct MessageCell: View {
             
             HStack(alignment: .top){
                 
-                Image(systemName: "person.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .clipShape(Circle())
-                    .frame(width: 40, height: 40)
+                VStack{
+                    Image(systemName: "person.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .clipShape(Circle())
+                        .frame(width: 40, height: 40)
+                    Text(loginData.memberName)
+                }
                 
                 VStack{
-                    Text(msg)
+                    Text(chatModel.message)
                         .foregroundStyle(.black)
                         .fontWeight(.semibold)
                         .lineLimit(17)
@@ -165,6 +163,6 @@ struct MessageCell: View {
 
 
 #Preview {
-    ChattingView()
+    ChattingView(chatData: ChatData(channerNo: "44", channerName: "asdf", memberID: "qwer"))
 }
     

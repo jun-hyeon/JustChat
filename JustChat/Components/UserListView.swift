@@ -82,7 +82,6 @@ struct UserListView: View {
                 await searchVM.fetchSearchUser()
             }
         }
-        
     }
 }
 

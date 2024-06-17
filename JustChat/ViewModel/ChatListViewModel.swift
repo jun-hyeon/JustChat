@@ -8,7 +8,7 @@
 import Foundation
 class ChatListViewModel: ObservableObject{
     
-    @Published var chatListModel = ChatListModel(memberID: "qwer", pageCurrent: 1, perPage: 20)
+    @Published var chatListModel = ChatListModel(memberID: "", pageCurrent: 1, perPage: 20)
     @Published var chatList = [ChatData]()
     
     private let networkManager = NetworkManager.shared
@@ -16,7 +16,7 @@ class ChatListViewModel: ObservableObject{
     
     static let shared = ChatListViewModel()
     
-    func loadChatList() async -> Result<ChatListResponse, Error>{
+    private func loadChatList() async -> Result<ChatListResponse, Error>{
         
         do{
             

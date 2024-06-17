@@ -12,7 +12,7 @@ class CreateChatViewModel: ObservableObject{
     
     static let shared = CreateChatViewModel()
     // 로그인 정보 저장 후 추가
-    @Published var createChatModel = CreateChatModel(memberID: "qwer", channerName: "", inviteMember: [])
+    @Published var createChatModel = CreateChatModel(memberID: "", channerName: "", inviteMember: [])
     
     
     //챗 생성

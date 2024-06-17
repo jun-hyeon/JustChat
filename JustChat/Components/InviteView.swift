@@ -30,7 +30,6 @@ struct InviteView: View {
                             Task{
                                 await searchVM.fetchSearchUser()
                             }
-
                         }
                 }
                 .padding()

@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import GoogleSignIn
+import GoogleSignInSwift
 
 struct LoginView: View {
     @ObservedObject var loginVM : LoginViewModel
@@ -120,19 +122,11 @@ struct LoginView: View {
                             
                             
                             //구글로그인
-                            Button{
-                                //TODO Login Method
+                            GoogleSignInButton(viewModel: .init(scheme: .light, style: .wide, state: .normal)){
+                                loginVM.googleLogin()
                                 
-                            
-                            }label:{
-                                Text("Continue With Google")
-                                    .foregroundStyle(.white)
-                                    .frame(maxWidth: .infinity)
                             }
-                            .clipShape(Capsule())
-                            .controlSize(.large)
-                            .buttonStyle(BorderedProminentButtonStyle())
-                            .tint(.blue.opacity(0.5))
+                          
                             
                         }//ButtonVStack
                         .padding()
@@ -155,6 +149,7 @@ struct LoginView: View {
         }//NavigationStack
         
     }
+
         
 }
 
