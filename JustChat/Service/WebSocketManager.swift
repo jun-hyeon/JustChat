@@ -15,6 +15,7 @@ class WebsocketManager: ObservableObject{
     
     private var webSocketTask: URLSessionWebSocketTask?
     private var isActive = false
+    private let apiKey = Bundle.main.apiKey
 
     init(){
         
@@ -22,7 +23,7 @@ class WebsocketManager: ObservableObject{
     
      func connect(channerNo: String, memberId: String) async{
         
-        guard let url = URL(string: "ws://172.30.1.3:3380") else { return }
+         guard let url = URL(string: "ws://\(apiKey ?? ""):3380") else { return }
         
         var request = URLRequest(url: url)
         request.addValue("\(memberId)", forHTTPHeaderField: "member_id")
