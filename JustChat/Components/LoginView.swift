@@ -70,7 +70,7 @@ struct LoginView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
                             //패스워드 입력
-                            TextField("Password를 입력해주세요", text: $loginVM.loginModel.memberPwd)
+                            SecureField("Password를 입력해주세요", text: $loginVM.loginModel.memberPwd)
                                 .padding()
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 8).stroke(.black)

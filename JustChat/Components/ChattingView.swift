@@ -9,10 +9,13 @@ import SwiftUI
 
 
 struct ChattingView: View {
+    
     private let loginData = UserManager.shared.getCurrentUser()
+    @Environment(\.scenePhase) private var phase
     @StateObject var wsManager =  WebsocketManager.shared
     
     @State private var text = ""
+    @State private var isChat = true
     
     var chatData: ChatData
     
@@ -21,19 +24,25 @@ struct ChattingView: View {
         
         NavigationStack{
             
-            ScrollView{
-                
-                ForEach(wsManager.messages, id: \.self){ message in
+            ScrollViewReader{ scrollValue in
+                ScrollView{
                     
-                    VStack{
-                        MessageCell(chatModel: message, loginData: loginData)
-                            .padding()
-                    }//VStack
-                    
-                }//ForEach
-                .padding()
-                
-            }//ScrollView
+                    ForEach(wsManager.messages, id: \.self){ message in
+                        
+                        LazyVStack{
+                            MessageCell(chatModel: message, loginData: loginData)
+                                .id(message)
+                                .padding()
+                        }//VStack
+                        
+                    }//ForEach
+                    .padding()
+                    .onChange(of: wsManager.messages.count){
+                        scrollValue.scrollTo(wsManager.messages.last)
+                    }
+
+                }//ScrollView
+             }
             HStack{
                 
                 Button{
@@ -47,7 +56,6 @@ struct ChattingView: View {
                 
                 TextField("Chat", text: $text)
                     .padding(8)
-                    
                     .overlay{
                         Capsule()
                             .stroke(.black, lineWidth: 1.0)
@@ -56,12 +64,12 @@ struct ChattingView: View {
                     Spacer()
                     
                 Button{
-                    //send message func
-                    Task{
-                        wsManager.sendMessage(text, memberId: loginData.memberID)
-                        await wsManager.receiveMessage()
-                        print(wsManager.messages)
-                    }
+                    //send message fun
+                    if !text.isEmpty{
+                            wsManager.sendMessage(text, memberId: loginData.memberID)
+                            print(wsManager.messages)
+                            text = ""
+                        }
                     
                 }label:{
                     Image(systemName: "paperplane")
@@ -75,29 +83,16 @@ struct ChattingView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar{
-            ToolbarItem(placement: .topBarLeading){
+            ToolbarItem(placement: .primaryAction){
                 
-                HStack(alignment: .center){
-                    Image(systemName: "person.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .clipShape(Circle())
-                        .frame(width: 40, height: 40)
-                        .padding(8)
-                    
-                    VStack{
-                        
-                        Text("aasdf")
-                    }
-                    .padding()
-                }
+                Text(chatData.channerName)
             }
         }
-        .onAppear{
-            Task{
-                await wsManager.connect(channerNo:chatData.channerNo,memberId: loginData.memberID)
-                await wsManager.receiveMessage()
-            }
+        .task{
+            await wsManager.connect(channerNo:chatData.channerNo,memberId: loginData.memberID)
+        }
+        .onDisappear{
+            wsManager.disConnect()
         }
         
     }
@@ -122,7 +117,6 @@ struct MessageCell: View {
                         .foregroundStyle(.white)
                         .fontWeight(.semibold)
                         .lineLimit(17)
-                        
                 }
                 .padding(8)
                 .background(.blue)
@@ -135,11 +129,21 @@ struct MessageCell: View {
             HStack(alignment: .top){
                 
                 VStack{
-                    Image(systemName: "person.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .clipShape(Circle())
-                        .frame(width: 40, height: 40)
+                    AsyncImage(url: URL(string:"")) { image in
+                        image
+                            .resizable()
+                            .scaledToFill()
+                        
+                    } placeholder: {
+                        
+                        Image(systemName: "person.fill")
+                            .resizable()
+                            .scaledToFit()
+                            
+                    }
+                    .clipShape(Circle())
+                    .frame(width: 40, height: 40)
+
                     Text(loginData.memberName)
                 }
                 

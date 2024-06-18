@@ -29,8 +29,9 @@ struct MainView: View {
                             Text("Users")
                         }
                     }.tag("users")
+                    
                 
-                SettingView()
+                SettingView(loginVM: loginVM)
                     .tabItem {
                         VStack{
                             Image(systemName: selection == "setting" ? "square.grid.2x2.fill" : "square.grid.2x2")

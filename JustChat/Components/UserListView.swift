@@ -9,6 +9,7 @@ import SwiftUI
 
 struct UserListView: View {
     @StateObject private var searchVM = SearchViewModel.shared
+    @State private var user = UserManager.shared.getCurrentUser()
     var body: some View {
         
         NavigationStack{
@@ -17,7 +18,7 @@ struct UserListView: View {
             
                 HStack{
                     
-                    AsyncImage(url: URL(string:"")) { image in
+                    AsyncImage(url: URL(string:user.profileFile ?? "")) { image in
                         image
                             .resizable()
                             .scaledToFill()
@@ -37,15 +38,11 @@ struct UserListView: View {
                     
                     
                     VStack(alignment: .leading){
-                        Text("Amir-Zhen")
+                        Text(user.nickName)
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundStyle(.black)
                         
-                        Text("As long as it is a payment")
-                            .font(.caption)
-                            .fontWeight(.thin)
-                            .foregroundStyle(.gray)
                     }
                     
                     Spacer()
@@ -79,6 +76,7 @@ struct UserListView: View {
         }
         .onAppear{
             Task{
+                searchVM.searchModel.keyword = ""
                 await searchVM.fetchSearchUser()
             }
         }

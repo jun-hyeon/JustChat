@@ -8,11 +8,14 @@
 import SwiftUI
 
 struct SettingView: View {
+    @ObservedObject var loginVM : LoginViewModel
+    @State private var user = UserManager.shared.getCurrentUser()
     var body: some View {
-        List{
+        ScrollView{
             VStack(alignment: .leading){
                     HStack{
-                        AsyncImage(url: URL(string:"")) { image in
+                        
+                        AsyncImage(url: URL(string:user.profileFile ?? "" )) { image in
                             image
                                 .resizable()
                                 .scaledToFill()
@@ -32,65 +35,59 @@ struct SettingView: View {
                         .padding()
                         
                         VStack(alignment: .leading){
-                            Text("Amir-Zhen")
+                            Text(user.nickName)
                                 .font(.title2)
                                 .fontWeight(.semibold)
                                 
-                            Text("As long as it is a payment")
-                                .font(.caption)
-                                .fontWeight(.thin)
-                                .foregroundStyle(.gray)
                         }
+                        Spacer()
                     }//HStack
+                
+                    
+                
+    
+                    Label{
+                        Text("Available")
+                            .font(.title2)
+                    }icon:{
+                        Image(systemName: "checkmark.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundStyle(.green)
+                            .frame(width: 20, height: 20)
+                    }
+                    .padding()
+                    
+                    Label{
+                        Text("Notification")
+                            .font(.title2)
+                    }icon:{
+                        Image(systemName: "bell")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundStyle(.black)
+                            .frame(width: 20, height: 20)
+                    }
+                    .padding()
+                
+                
+                    
+                            
                 Spacer()
-                    
-                VStack(alignment:.leading, spacing: 32){
-                    
-                                Label{
-                                    Text("Available")
-                                        .font(.title2)
-                                }icon:{
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundStyle(.green)
-                                }
-                                
-                                Label{
-                                    Text("Notification")
-                                        .font(.title2)
-                                }icon:{
-                                    Image(systemName: "bell")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundStyle(.black)
-                                }
-                                
-                                Label{
-                                    Text("abcd@1234.com")
-                                        .font(.title2)
-                                        .tint(.black)
-                                        
-                                }icon:{
-                                    Image(systemName: "envelope")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundStyle(.black)
-                                }
-                                
-                    
-                            }.padding(.horizontal)
+                
+                Button{
+                    loginVM.logOut()
+                }label:{
+                    Text("LogOut")
+                }
+                .padding()
                 
             }
-            .listRowSeparator(.hidden, edges: .all)
-            .padding(.horizontal)
-            
+            .padding()
         }
-        .listStyle(.plain)
-        
     }
 }
 
 #Preview {
-    SettingView()
+    SettingView(loginVM: LoginViewModel())
 }

@@ -50,14 +50,20 @@ struct ChatListView: View {
                 }
                 .padding()
             }//ZStack
+            .navigationTitle("ChatRoom")
+            .navigationBarTitleDisplayMode(.large)
         }//NavigatioNStack
-        .onAppear{
-            chatListVM.chatListModel.memberID =  UserManager.shared.getCurrentUser().memberID
-            print("nae,",UserManager.shared.getCurrentUser().memberID)
+        .onAppear(){
             Task{
-                 await chatListVM.fetchList()
+                chatListVM.chatListModel.memberID =  UserManager.shared.getCurrentUser().memberID
+                print("nae,",UserManager.shared.getCurrentUser().memberID)
+                await chatListVM.fetchList()
             }
         }
+        .refreshable {
+            await chatListVM.fetchList()
+        }
+        
       
 
     }

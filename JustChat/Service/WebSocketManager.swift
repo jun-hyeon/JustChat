@@ -32,8 +32,10 @@ class WebsocketManager: ObservableObject{
         webSocketTask = URLSession.shared.webSocketTask(with: request)
         webSocketTask?.resume()
         isActive = true
-        await receiveMessage()
-        
+         
+        while isActive{
+            await receiveMessage()
+        }
     }
     
      @MainActor

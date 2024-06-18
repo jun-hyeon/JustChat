@@ -34,30 +34,10 @@ struct ChatListItem: View {
                         .font(.callout)
                         .fontWeight(.semibold)
                         .foregroundStyle(.black)
-                    
-                    Text("As long as it is a payment")
-                        .font(.caption)
-                        .fontWeight(.thin)
-                        .foregroundStyle(.gray)
                 }
                 
                 Spacer()
                 
-                VStack{
-                    Text("9:32 AM")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.gray)
-                        
-                    Text("2")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .frame(width: 20, height: 20)
-                        .background(.red)
-                        .clipShape(Circle())
-                        .foregroundStyle(.white)
-                        
-                }.padding()
             }//HStack
             
             Divider()
@@ -68,5 +48,5 @@ struct ChatListItem: View {
 }
 
 #Preview {
-    ChatListItem(chatData: ChatData(channerNo: "4C2bBONchzGBGep_if7yI", channerName: "야스하지않으면 나갈 수 없는 방", memberID: "qwer"))
+    ChatListItem(chatData: ChatData(channerNo: "4C2bBONchzGBGep_if7yI", channerName: "1234", memberID: "qwer"))
 }
