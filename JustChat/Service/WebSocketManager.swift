@@ -7,23 +7,27 @@
 
 import Foundation
 
-class WebsocketManager: ObservableObject{
-    
-    @Published var messages = [ChatModel]()
+enum ReceiveError: Error{
+    case baseError
+    case stringError
+    case chatModelError
+    case dataError
+}
+
+class WebsocketManager{
     
     static let shared = WebsocketManager()
     
     private var webSocketTask: URLSessionWebSocketTask?
-    private var isActive = false
     private let apiKey = Bundle.main.apiKey
-
-    init(){
-        
-    }
     
-     func connect(channerNo: String, memberId: String) async{
+    init(){}
+    
+    func connect(channerNo: String, memberId: String) async{
         
-         guard let url = URL(string: "ws://\(apiKey ?? ""):3380") else { return }
+        guard let url = URL(string: "ws://\(apiKey ?? ""):3380") else { return }
+
+        
         
         var request = URLRequest(url: url)
         request.addValue("\(memberId)", forHTTPHeaderField: "member_id")
@@ -31,63 +35,27 @@ class WebsocketManager: ObservableObject{
         
         webSocketTask = URLSession.shared.webSocketTask(with: request)
         webSocketTask?.resume()
-        isActive = true
-         
-        while isActive{
-            await receiveMessage()
-        }
+        
     }
     
-     @MainActor
-     func receiveMessage() async {
-            do{
-                let message = try await webSocketTask?.receive()
-                
-                switch message{
-                    
-                case .string(let str):
-                    
-                    print("문자열 타입입니다.", str)
-                    guard let data = str.data(using: .utf8) else {
-                        print("String to data Error")
-                        return
-                    }
-                    
-                    guard let decoded = try? JSONDecoder().decode(ChatModel.self, from: data) else {
-                        print("Decode Error")
-                        return
-                    }
-                    
-                    self.messages.append(decoded)
-                    
-                    
-                case .data(let data):
-                    print("data 타입입니다.")
-                    print(data)
-                    
-                case .none:
-                    print("none")
-                    
-                @unknown default:
-                    print("unknown message received")
-                }
-                
-            }catch{
-                print(error)
+    @MainActor
+    func receiveMessage( completion:(URLSessionWebSocketTask.Message) -> Void) async throws{
+        do{
+            guard let message = try await webSocketTask?.receive() else{
+                throw ReceiveError.baseError
             }
+            completion(message)
+            
+        }catch{
+            print(error)
+        }
         
     }
     
     
-    func sendMessage(_ message: String, memberId: String) {
+    func sendMessage(_ message: String) {
         
-        let data = ChatModel(memberId: memberId, message: message)
-        
-        guard let encoded = try? JSONEncoder().encode(data) else {
-            print("Encoding Error")
-            return
-        }
-        webSocketTask?.send(.data(encoded)) { error in
+        webSocketTask?.send(.string(message)) { error in
             if let error = error {
                 print("전송에러")
                 print(error.localizedDescription)
@@ -96,7 +64,6 @@ class WebsocketManager: ObservableObject{
     }
     
     func disConnect(){
-        isActive = false
         webSocketTask?.cancel()
     }
 }

@@ -17,14 +17,12 @@ struct SearchModel: Codable {
         case keyword
         case pageCurrent = "page_current"
         case perPage = "per_page"
-        
-        
     }
 }
 
 
 // MARK: - SearchModel
-struct SearchResponse: Codable {
+struct SearchResponse: Decodable {
     
     let success: Bool
     let message: String
@@ -32,7 +30,7 @@ struct SearchResponse: Codable {
     
 }
 
-struct SearchResult : Codable{
+struct SearchResult : Decodable{
     let list: [MemberData]
     let totalCount : Int
     
@@ -43,16 +41,16 @@ struct SearchResult : Codable{
 }
 
 // MARK: - Datum
-struct MemberData: Codable, Hashable{
-    let memberID, memberName, nickName: String
-    let profileFile : String?
+struct MemberData: Decodable, Hashable{
+    let memberID, memberName, nickName, profileUrl: String
+    let profileKey : String?
     
 
     enum CodingKeys: String, CodingKey {
         case memberID = "member_id"
         case memberName = "member_name"
         case nickName = "nick_name"
-        case profileFile = "profile_file"
-        
+        case profileKey = "profile_key"
+        case profileUrl = "profile_url"
     }
 }

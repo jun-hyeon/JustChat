@@ -10,7 +10,7 @@ import PhotosUI
 
 struct SignUpView: View {
     
-    @StateObject var signUpVM = SignUpViewModel()
+    @StateObject var signUpVM = SignUpStore()
     
     @State private var signUpId = ""
     @State private var signUpPwd = ""
@@ -26,7 +26,6 @@ struct SignUpView: View {
     
     @State private var photoItem : PhotosPickerItem?
     @State private var photoImage : UIImage?
-    @State private var imageData : Data?
     
     @Environment(\.dismiss) var dismiss
     
@@ -34,25 +33,30 @@ struct SignUpView: View {
         
         NavigationStack{
             ScrollView{
-                    VStack{
-                        //앨범에서 이미지 선택
-                        Spacer()
-                        PhotosPicker(selection: $photoItem, photoLibrary: .shared()) {
+                VStack{
+                    //앨범에서 이미지 선택
+                    Spacer()
+                    PhotosPicker(selection: $photoItem,matching:.images, photoLibrary: .shared()) {
+                        
+                        //이미지가 선택되었을때
+                        if let image = photoImage{
                             
-                            //이미지가 선택되었을때
-                            if let image = photoImage{
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 90, height: 90)
-                                    .clipShape(Circle())
-                                    .overlay{
-                                        Circle().stroke(.white, lineWidth: 2)
-                                    }
-                                    .shadow(radius: 6)
-                                    .padding()
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 90, height: 90)
+                                .clipped()
+                                .clipShape(Circle())
+                                .overlay{
+                                    Circle().stroke(.white, lineWidth: 2)
+                                }
+                                .shadow(radius: 6)
+                                .padding()
+                            
+                        }else{
+                            
+                            ZStack(alignment: .bottomTrailing){
                                 
-                            }else{
                                 //이미지가 선택되지 않았을때
                                 Image(systemName: "person.fill")
                                     .resizable()
@@ -65,159 +69,163 @@ struct SignUpView: View {
                                     .shadow(radius: 6)
                                     .padding()
                                     .foregroundStyle(.black)
-                            }
-                            
-                        }
-                        
-                        .onChange(of: photoItem){
-                            Task{
-                                if let data = try? await photoItem?.loadTransferable(type: Data.self){
-                                    photoImage = UIImage(data: data)
+                                
+                               Image(systemName: "camera.circle.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 35, height: 35)
+                                    .foregroundStyle(.white)
                                     
-                                    print("OnChange imageData: ", photoImage as Any)
-                                }else{
-                                    print("Failed")
-                                }
+                                    .padding(24)
                             }
+                            .frame(width: 90, height: 90)
                         }
+                    }.task(id: photoItem){
+                        if let data = try? await photoItem?.loadTransferable(type: Data.self){
+                            photoImage  = UIImage(data: data)?.resize(newWidth: 200)
                             
-                        //name입력
-                        VStack(alignment: .leading){
-                            Text("Name")
-                            TextField("이름을 입력해주세요", text: $signUpName)
-                                .padding()
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 8).stroke(.black)
-                                }
-                                .onChange(of: signUpName){
-                                    isNameError = signUpName.count < 2 ? true : false
-                                }
-                                
-                            Text("2자이상 입력해주세요.")
-                                .font(.caption)
-                                .foregroundStyle(isNameError ? .red : .clear )
+                            print("OnChange imageData: ", photoImage as Any)
+                        }else{
+                            print("Failed")
                         }
-                        .padding(.horizontal)
+                    }
+                    
+                    //name입력
+                    VStack(alignment: .leading){
+                        Text("Name")
+                        TextField("이름을 입력해주세요", text: $signUpName)
+                            .padding()
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 8).stroke(.black)
+                            }
+                            .onChange(of: signUpName){
+                                isNameError = signUpName.count < 2 ? true : false
+                            }.textInputAutocapitalization(.never)
                         
-                        //NickName 입력
-                        VStack(alignment: .leading){
-                            Text("NickName")
+                        Text("2자이상 입력해주세요.")
+                            .font(.caption)
+                            .foregroundStyle(isNameError ? .red : .clear )
+                    }
+                    .padding(.horizontal)
+                    
+                    //NickName 입력
+                    VStack(alignment: .leading){
+                        Text("NickName")
+                        
+                        TextField("NickName을 입력해주세요", text: $signUpNickName)
+                            .padding()
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 8).stroke(.black)
+                            }
+                            .onChange(of: signUpNickName){
+                                isNickError = signUpNickName.count < 2 ? true : false
+                            }.textInputAutocapitalization(.never)
+                        
+                        Text("2자이상 입력해주세요.")
+                            .font(.caption)
+                            .foregroundStyle(isNickError ? .red : .clear )
+                    }
+                    .padding(.horizontal)
+                    
+                    
+                    //id입력
+                    VStack(alignment:.leading){
+                        Text("ID")
+                        TextField("ID를 입력해주세요", text: $signUpId)
+                            .padding()
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 8).stroke(.black)
+                            }
+                            .onChange(of: signUpId){
+                                isIdError = signUpId.count < 4 ? true : false
+                            }.textInputAutocapitalization(.never)
+                        
+                        Text("4자이상 입력해주세요.")
+                            .font(.caption)
+                            .foregroundStyle(isIdError ? .red : .clear )
+                    }
+                    .padding(.horizontal)
+                    
+                    //패스워드 입력
+                    VStack(alignment: .leading){
+                        Text("Password")
+                        
+                        SecureField("Password를 입력해주세요", text: $signUpPwd)
+                            .padding()
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 8).stroke(.black)
+                            }
+                            .onChange(of: signUpPwd){
+                                isPwdError = signUpPwd.count < 4 ? true : false
+                            }.textInputAutocapitalization(.never)
+                        
+                        Text("2자이상 입력해주세요.")
+                            .font(.caption)
+                            .foregroundStyle(isPwdError ? .red : .clear )
+                    }
+                    .padding(.horizontal)
+                    
+                    //패스워드 확인
+                    VStack(alignment: .leading){
+                        Text("PasswordCheck")
+                        //패스워드 확인
+                        SecureField("Password를 입력해주세요", text: $checkPwd)
+                            .padding()
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 8).stroke(.black)
+                            }
+                            .onChange(of: checkPwd){
+                                isPwdCheckError = signUpPwd != checkPwd ? true : false
+                            }
+                        
+                        Text("비밀번호를 정확하게 입력해주세요")
+                            .font(.caption)
+                            .foregroundStyle(isPwdCheckError ? .red : .clear )
+                    }
+                    .padding(.horizontal)
+                    
+                    
+                    
+                    // 회원가입 버튼
+                    Button{
+                        //TODO 회원가입 기능
+                        if checkSignUp(){
                             
-                            TextField("NickName을 입력해주세요", text: $signUpNickName)
-                                .padding()
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 8).stroke(.black)
-                                }
-                                .onChange(of: signUpNickName){
-                                    isNickError = signUpNickName.count < 2 ? true : false
-                                }
-                                
-                            Text("2자이상 입력해주세요.")
-                                .font(.caption)
-                                .foregroundStyle(isNickError ? .red : .clear )
-                        }
-                        .padding(.horizontal)
-
-                        
-                        //id입력
-                        VStack(alignment:.leading){
-                            Text("ID")
-                            TextField("ID를 입력해주세요", text: $signUpId)
-                                .padding()
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 8).stroke(.black)
-                                }
-                                .onChange(of: signUpId){
-                                    isIdError = signUpId.count < 4 ? true : false
-                                }
-                                
-                            Text("4자이상 입력해주세요.")
-                                .font(.caption)
-                                .foregroundStyle(isIdError ? .red : .clear )
-                        }
-                        .padding(.horizontal)
-                        
-                        //패스워드 입력
-                        VStack(alignment: .leading){
-                            Text("Password")
+                            signUpVM.registerModel.memberID = signUpId
+                            signUpVM.registerModel.memberName = signUpName
+                            signUpVM.registerModel.memberPwd = signUpPwd
+                            signUpVM.registerModel.nickName = signUpNickName
                             
-                            
-                            SecureField("Password를 입력해주세요", text: $signUpPwd)
-                                .padding()
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 8).stroke(.black)
+                    
+                            Task{
+                                guard let image = photoImage else {
+                                    print("NO ImageData!")
+                                    return
                                 }
-                                .onChange(of: signUpPwd){
-                                    isPwdError = signUpPwd.count < 4 ? true : false
-                                }
-                                
-                            Text("2자이상 입력해주세요.")
-                                .font(.caption)
-                                .foregroundStyle(isPwdError ? .red : .clear )
-                        }
-                        .padding(.horizontal)
-                            
-                        
-                        VStack(alignment: .leading){
-                            Text("PasswordCheck")
-                            //패스워드 확인
-                            SecureField("Password를 입력해주세요", text: $checkPwd)
-                                .padding()
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 8).stroke(.black)
-                                }
-                                .onChange(of: checkPwd){
-                                    isPwdCheckError = signUpPwd != checkPwd ? true : false
-                                }
-                                
-                            Text("비밀번호를 정확하게 입력해주세요")
-                                .font(.caption)
-                                .foregroundStyle(isPwdCheckError ? .red : .clear )
-                        }
-                        .padding(.horizontal)
-                        
-                        
-                        
-                        // 회원가입 버튼
-                        Button{
-                            //TODO 회원가입 기능
-                            if checkSignUp(){
-                                
-                                signUpVM.registerModel.memberID = signUpId
-                                signUpVM.registerModel.memberName = signUpName
-                                signUpVM.registerModel.memberPwd = signUpPwd
-                                signUpVM.registerModel.nickName = signUpNickName
-                                
-                                
-                                
-                                Task{
-                                    guard let image = photoImage else {
-                                        print("NO ImageData!")
-                                        return
-                                    }
-                                    print("Button imageData", image)
-                                    await signUpVM.signUp(image: image)
-                                }
-                                
-                                self.dismiss()
-                                
+                                print("Button imageData", image)
+                                await signUpVM.signUp(image: image)
                             }
                             
-                        }label:{
-                            Text("회원가입")
-                                .foregroundStyle(.white)
-                                .frame(maxWidth: .infinity)
+                            self.dismiss()
+                            
                         }
-                        .buttonBorderShape(.roundedRectangle(radius: 8))
-                        .controlSize(.large)
-                        .buttonStyle(BorderedProminentButtonStyle())
-                        .padding()
                         
-                        
-                    }//VStack
+                    }label:{
+                        Text("회원가입")
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonBorderShape(.roundedRectangle(radius: 8))
+                    .controlSize(.large)
+                    .buttonStyle(BorderedProminentButtonStyle())
                     .padding()
+                    
+                    
+                }//VStack
+                .padding()
                 
             }
+            .scrollIndicators(.hidden)
         }//NavigationStack
         .navigationTitle("회원가입")
     }
@@ -231,5 +239,7 @@ struct SignUpView: View {
 }
 
 #Preview {
-    SignUpView()
+    NavigationStack{
+        SignUpView()
+    }
 }

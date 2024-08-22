@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ChatCreateView: View {
     
-    @StateObject private var createChatVM = CreateChatViewModel.shared
+    @ObservedObject var chatStore: ChatStore
     
     
     @Environment (\.dismiss) private var dismiss
@@ -28,132 +28,137 @@ struct ChatCreateView: View {
     
     private let userData = UserManager.shared.getCurrentUser()
     
+    private func createChat(){
+        
+    }
+    
     var body: some View {
         
         NavigationStack{
             
-            VStack{
-                Spacer()
-                
+            ScrollView{
                 VStack{
-                    Text("title")
-                        .font(.caption)
-                        .foregroundStyle(.gray)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Spacer()
                     
-                    //id입력
-                    TextField("방 제목을 입력해주세요", text: $roomName)
-                        .padding()
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 8).stroke(.black)
-                        }
-                        .textInputAutocapitalization(.never)
-                        .onChange(of: roomName){
-                            roomNameError = roomName.count < 2 ? true : false
-                        }
-                        
-                }
-                .padding()
-                
-                
-                VStack{
-                    Toggle("방 공개여부", isOn: $isPrivate)
-                        .padding()
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 8).stroke(.black)
-                        }
-                }
-                .padding()
-                
-
-                if isPrivate{
                     VStack{
-                        
-                        Text("password")
+                        Text("title")
                             .font(.caption)
                             .foregroundStyle(.gray)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         //id입력
-                        SecureField("비밀번호를 입력해주세요", text: $roomPwd)
+                        TextField("방 제목을 입력해주세요", text: $roomName)
                             .padding()
                             .overlay {
                                 RoundedRectangle(cornerRadius: 8).stroke(.black)
                             }
                             .textInputAutocapitalization(.never)
-                            .textContentType(.password)
-                            .keyboardType(.decimalPad)
-                            .onChange(of: roomPwd) {
-                                roomPwdError = roomPwd.count < 2 ? true : false
+                            .onChange(of: roomName){
+                                roomNameError = roomName.count < 2 ? true : false
+                            }
+                        
+                    }
+                    .padding()
+                    
+                    
+                    VStack{
+                        Toggle("방 공개여부", isOn: $isPrivate)
+                            .padding()
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 8).stroke(.black)
                             }
                     }
                     .padding()
-                }
-                
-                
-                VStack{
-                    //초대하기 버튼
+                    
+                    
+                    if isPrivate{
+                        VStack{
+                            
+                            Text("password")
+                                .font(.caption)
+                                .foregroundStyle(.gray)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            //id입력
+                            SecureField("비밀번호를 입력해주세요", text: $roomPwd)
+                                .padding()
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 8).stroke(.black)
+                                }
+                                .textInputAutocapitalization(.never)
+                                .textContentType(.password)
+                                .keyboardType(.decimalPad)
+                                .onChange(of: roomPwd) {
+                                    roomPwdError = roomPwd.count < 2 ? true : false
+                                }
+                        }
+                        .padding()
+                    }
+                    
+                    
+                    VStack{
+                        //초대하기 버튼
+                        Button{
+                            openUserList.toggle()
+                        }label:{
+                            Text("초대하기")
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    
+                    Spacer()
+                    
+                    
+                    HStack(spacing: 5){
+                        ForEach(selectedMember.sorted{$0.nickName < $1.nickName}, id: \.self){ member in
+                            CircleUserItem(memberData: member)
+                            Spacer()
+                        }
+                        .onChange(of: selectedMember) {
+                            inviteMemberError = selectedMember.count <= 0 ? true : false
+                        }
+                    }
+                    .padding()
+                    
+                    Spacer()
+                    
+                    
+                    //방 생성 버튼
                     Button{
-                        openUserList.toggle()
-                    }label:{
-                        Text("초대하기")
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                
-                Spacer()
-                
-                
-                HStack(spacing: 5){
-                    ForEach(selectedMember.sorted{$0.nickName < $1.nickName}, id: \.self){ member in
-                        CircleUserItem(memberData: member)
-                        Spacer()
-                    }
-                    .onChange(of: selectedMember) {
-                        inviteMemberError = selectedMember.count <= 0 ? true : false
-                    }
-                }
-                .padding()
-                
-                Spacer()
-                
-                
-                //방 생성 버튼
-                Button{
                         // 버튼이 눌렸을 때의 동작
                         if checkError(){
+                            var chatModel = CreateChatModel(memberID: userData.memberID, channerName: roomName, inviteMember: selectedMember.map{$0.memberID})
                             if isPrivate{
-                                createChatVM.createChatModel.connectKey = Int(roomPwd) ?? 0
+                                
+                                chatModel.connectKey = Int(roomPwd)
                             }
-                            createChatVM.createChatModel.channerName = roomName
-                            createChatVM.createChatModel.inviteMember = selectedMember.map{$0.memberID}
-                            createChatVM.createChatModel.memberID =
-                            userData.memberID
                             
                             Task{
-                                print(createChatVM.createChatModel)
-                                await createChatVM.createChat()
+                                
+                                await chatStore.createChat(chatModel: chatModel)
+                                
                             }
                             dismiss()
                         }
-                    
-                }label: {
-                            Text("방 생성하기")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                        }
-                        .padding()
-                        .background(checkError() ? .blue : Color(.systemGray6))
-                        .clipShape(.rect(cornerRadius: 16))
-                        .shadow(radius: 10)
                         
+                    }label: {
+                        Text("방 생성하기")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                    }
+                    .padding()
+                    .background(checkError() ? .blue : Color(.systemGray6))
+                    .clipShape(.rect(cornerRadius: 16))
+                    .shadow(radius: 10)
                     
-            }
-            .navigationTitle("방 생성")
-            .navigationBarTitleDisplayMode(.large)
-            .sheet(isPresented: $openUserList){
-                InviteView(openUserList: $openUserList, selectedMember: $selectedMember)
+                    
+                }
+                .navigationTitle("방 생성")
+                .navigationBarTitleDisplayMode(.large)
+                .sheet(isPresented: $openUserList){
+                    InviteView(openUserList: $openUserList, selectedMember: $selectedMember)
+                }
             }
         }//NavigationStack
         
@@ -174,5 +179,5 @@ struct ChatCreateView: View {
 }
 
 #Preview {
-    ChatCreateView()
+    ChatCreateView(chatStore: ChatStore())
 }

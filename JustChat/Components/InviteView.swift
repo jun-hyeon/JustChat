@@ -9,7 +9,7 @@ import SwiftUI
 
 struct InviteView: View {
     
-    @StateObject private var searchVM = SearchViewModel.shared
+    @StateObject private var searchVM = SearchStore.shared
     @State private var editMode = EditMode.active
     
     @Binding var openUserList : Bool

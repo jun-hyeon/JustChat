@@ -25,16 +25,17 @@ struct LoginResponse: Codable {
 
 // MARK: - DataClasse
 struct LoginData: Codable {
-    let memberID, memberName, nickName, regDate: String
-    let profileFile : String?
+    let memberID, memberName, nickName, regDate, refreshToken, accessToken: String
+    let profileKey : String?
 
     enum CodingKeys: String, CodingKey {
         case memberID = "member_id"
         case memberName = "member_name"
         case nickName = "nick_name"
         case regDate = "reg_date"
-        case profileFile = "profile_file"
+        case profileKey = "profile_key"
+        case accessToken = "access_token"
+        case refreshToken = "refresh_token"
     }
-    
 }
 

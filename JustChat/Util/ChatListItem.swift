@@ -14,6 +14,16 @@ struct ChatListItem: View {
         
             HStack{
                 AsyncImage(url: URL(string:"")) { image in
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width:48, height: 48)
+                        .clipShape(Circle())
+                        .overlay{
+                            Circle().stroke(.white, lineWidth: 2)
+                        }
+                        .shadow(radius: 6)
+                        .padding()
                     
                 } placeholder: {
                     Image(systemName: "person.fill")

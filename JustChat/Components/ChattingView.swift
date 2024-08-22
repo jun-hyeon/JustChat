@@ -12,37 +12,35 @@ struct ChattingView: View {
     
     private let loginData = UserManager.shared.getCurrentUser()
     @Environment(\.scenePhase) private var phase
-    @StateObject var wsManager =  WebsocketManager.shared
+    @StateObject var chatVM = ChattingViewModel()
     
     @State private var text = ""
     @State private var isChat = true
+    @State private var scrollID: ChatModel?
     
     var chatData: ChatData
-    
     
     var body: some View {
         
         NavigationStack{
-            
             ScrollViewReader{ scrollValue in
                 ScrollView{
                     
-                    ForEach(wsManager.messages, id: \.self){ message in
-                        
-                        LazyVStack{
+                    LazyVStack{
+                        ForEach(chatVM.messages, id:\.self){ message in
                             MessageCell(chatModel: message, loginData: loginData)
-                                .id(message)
                                 .padding()
-                        }//VStack
-                        
-                    }//ForEach
+                        }// ForEach
+                    }//VStack
+                    .scrollTargetLayout()
                     .padding()
-                    .onChange(of: wsManager.messages.count){
-                        scrollValue.scrollTo(wsManager.messages.last)
-                    }
-
+                    
                 }//ScrollView
-             }
+                .scrollPosition(id: $scrollID)
+                .onChange(of: chatVM.messages.count) {
+                    scrollID = chatVM.messages.last
+                }
+            }
             HStack{
                 
                 Button{
@@ -60,40 +58,50 @@ struct ChattingView: View {
                         Capsule()
                             .stroke(.black, lineWidth: 1.0)
                     }
-                    
-                    Spacer()
-                    
+                
+                Spacer()
+                
                 Button{
                     //send message fun
                     if !text.isEmpty{
-                            wsManager.sendMessage(text, memberId: loginData.memberID)
-                            print(wsManager.messages)
-                            text = ""
-                        }
+                        chatVM.send(message:text, memberId:loginData.memberID)
+                        print(chatVM.messages)
+                        text = ""
+                    }
                     
+
                 }label:{
                     Image(systemName: "paperplane")
                         .background(.white)
                         .clipShape(Circle())
-                        
+                    
                 }
             }
             .padding(.horizontal)
             
         }
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
         .toolbar{
-            ToolbarItem(placement: .primaryAction){
-                
+            ToolbarItem(placement: .principal){
                 Text(chatData.channerName)
             }
+            ToolbarItem(placement: .primaryAction) {
+                Image(systemName: "list.dash")
+            }
         }
-        .task{
-            await wsManager.connect(channerNo:chatData.channerNo,memberId: loginData.memberID)
+        .onAppear{
+            Task{
+                await chatVM.connect(channerNo:chatData.channerNo, memberId: loginData.memberID)
+            }
         }
         .onDisappear{
-            wsManager.disConnect()
+            Task{
+                await chatVM.disConnect()
+            }
         }
+        
+        
         
     }
 }
@@ -123,7 +131,7 @@ struct MessageCell: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             
-
+            
         }else{
             
             HStack(alignment: .top){
@@ -139,11 +147,11 @@ struct MessageCell: View {
                         Image(systemName: "person.fill")
                             .resizable()
                             .scaledToFit()
-                            
+                        
                     }
                     .clipShape(Circle())
                     .frame(width: 40, height: 40)
-
+                    
                     Text(loginData.memberName)
                 }
                 
@@ -158,7 +166,7 @@ struct MessageCell: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 
                 Spacer()
-                    
+                
             }
         }
         
@@ -167,6 +175,8 @@ struct MessageCell: View {
 
 
 #Preview {
-    ChattingView(chatData: ChatData(channerNo: "44", channerName: "asdf", memberID: "qwer"))
+    NavigationStack{
+        ChattingView(chatData: ChatData(channerNo: "44", channerName: "asdf", memberID: "qwer"))
+    }
 }
-    
+

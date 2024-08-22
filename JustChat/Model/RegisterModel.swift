@@ -9,14 +9,14 @@ import Foundation
 struct RegisterModel: Codable {
     
     var memberID, memberPwd, memberName, nickName: String
-    var profileFile : String?
+    var profileKey : String?
 
     enum CodingKeys: String, CodingKey {
         case memberID = "member_id"
         case memberPwd = "member_pwd"
         case memberName = "member_name"
         case nickName = "nick_name"
-        case profileFile = "profile_file"
+        case profileKey = "profile_key"
     }
 }
 

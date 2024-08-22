@@ -24,5 +24,12 @@ struct CreateChatModel: Codable {
 struct CreateChatResponse: Codable {
     let success: Bool
     let message: String
+    let channerNo: String
+    
+    enum CodingKeys: String, CodingKey{
+        case success
+        case message
+        case channerNo = "channer_no"
+    }
 }
 

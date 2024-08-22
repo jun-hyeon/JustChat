@@ -9,11 +9,13 @@ import SwiftUI
 
 struct UserListItem: View {
     let memberData : MemberData?
+    private let imageManager = ImageManager.shared
+    @State private var userProfile = ""
     var body: some View {
         VStack{
             
             HStack{
-                AsyncImage(url: URL(string: memberData?.profileFile ?? "")) { image in
+                AsyncImage(url: URL(string: memberData?.profileUrl ?? "")) { image in
                     image
                         .resizable()
                         .scaledToFill()
@@ -36,7 +38,6 @@ struct UserListItem: View {
                         }
                         .shadow(radius: 6)
                         .padding()
-                    
                 }//asyncImage
                 
                 VStack(alignment: .leading){
@@ -58,5 +59,5 @@ struct UserListItem: View {
 }
 
 #Preview {
-    UserListItem(memberData: MemberData(memberID: "aaa", memberName: "aaa", nickName: "aaa", profileFile: "https://firebasestorage.googleapis.com/v0/b/just-chat-d0102.appspot.com/o/images%2Fimg_173.jpg?alt=media&token=b64f1382-e40f-48ff-a63c-ea093353d8ad"))
+    UserListItem(memberData: MemberData(memberID: "aaa", memberName: "aaa", nickName: "aaa", profileUrl: "" ,profileKey: "https://firebasestorage.googleapis.com/v0/b/just-chat-d0102.appspot.com/o/images%2Fimg_173.jpg?alt=media&token=b64f1382-e40f-48ff-a63c-ea093353d8ad"))
 }

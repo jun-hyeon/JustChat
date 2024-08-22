@@ -10,12 +10,25 @@ import GoogleSignIn
 
 @main
 struct JustChatApp: App {
+    @State var show = false
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .onOpenURL(perform: { url in
-                    GIDSignIn.sharedInstance.handle(url)
-                })
+            ZStack{
+                if show{
+                    ContentView()
+                        .onOpenURL(perform: { url in
+                            GIDSignIn.sharedInstance.handle(url)
+                        })
+                }else{
+                    LauchScreen()
+                }
+            }.onAppear{
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.8){
+                    withAnimation {
+                        show = true
+                    }
+                }
+            }
         }
     }
 }

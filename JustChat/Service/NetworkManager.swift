@@ -12,6 +12,10 @@ enum KeyError: Error{
     case error
 }
 
+enum TokenRequired{
+    case yes
+    case no
+}
 
 actor NetworkManager{
     
@@ -20,18 +24,36 @@ actor NetworkManager{
     private init(){}
     
     private var loginState : LoginState = .logout
+    private let userManager = UserManager.shared
     
-    
-    
-    private let headers: HTTPHeaders = [
-        "Content-Type" : "application/json",
-        "Accept" : "application/json"
-    ]
     
     func request<T: Decodable>(method: HTTPMethod,
+                               tokenRequired: TokenRequired,
                                path: String,
                                params: Parameters?,
                                of type: T.Type) async throws -> T{
+        
+        let user = userManager.getCurrentUser()
+        
+        var headers: HTTPHeaders = [
+            "Content-Type" : "application/json",
+            "Accept" : "application/json",
+        ]
+        
+        switch tokenRequired {
+        case .yes:
+            headers = [
+                "Content-Type" : "application/json",
+                "Accept" : "application/json",
+                "authorization" : "Bearer \(user.accessToken)"
+            ]
+            
+        case .no:
+            headers = [
+                "Content-Type" : "application/json",
+                "Accept" : "application/json",
+            ]
+        }
         
         var encoding : ParameterEncoding = JSONEncoding.default
         
@@ -43,13 +65,15 @@ actor NetworkManager{
                 default:
                     encoding = JSONEncoding.default
             }
+        
         guard let baseurl = Bundle.main.apiKey else{
             print("No API KEY")
             throw KeyError.error
         }
         print(baseurl)
             
-        let url = "http://" + baseurl + "/" + path
+//        let url = "http://" + baseurl + "/" + path
+        let url = "http://" + "118.46.197.26:3380" + "/" + path
         
         return try await withCheckedThrowingContinuation { continuation in
             AF.request(url,
@@ -71,48 +95,7 @@ actor NetworkManager{
         }
     }
     
-    //TEST
-    func testRequest(method: HTTPMethod,
-                               path: String,
-                               params: Parameters?) async throws -> String{
-        
-        var encoding : ParameterEncoding = JSONEncoding.default
-        
-            switch method{
-                case .post:
-                    encoding = JSONEncoding.default
-                case .get:
-                    encoding = URLEncoding.default
-                default:
-                    encoding = JSONEncoding.default
-            }
-        
-        guard let baseurl = Bundle.main.apiKey else{
-            print("No API KEY")
-            throw KeyError.error
-        }
-            
-        let url = "http://" + baseurl + "/" + path
-        
-        return try await withCheckedThrowingContinuation { continuation in
-            AF.request(url,
-            method: method,
-            parameters: params,
-            encoding: encoding,
-            headers: headers
-            ).responseString { response in
-                switch response.result{
-                case let .success(data):
-                    print("Request Success! ")
-                    continuation.resume(returning: data)
-                    
-                case let .failure(error):
-                    print("RequestError! ")
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
-    }
+    
     
     //multipart/form-daata
     func formDataRequest<T: Decodable>(data: Data, path: String, of type: T.Type) async throws -> T{

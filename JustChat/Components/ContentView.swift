@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @StateObject var  loginVM = LoginViewModel.shared
+    @StateObject var  loginVM = LoginStore.shared
+    
     
     var body: some View {
         

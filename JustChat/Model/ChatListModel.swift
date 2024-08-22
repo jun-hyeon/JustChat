@@ -29,10 +29,12 @@ struct ChatListResponse: Codable {
 struct ResponseData: Codable {
     let list: [ChatData]
     let totalCount: Int
+    let totalPage: Int
 
     enum CodingKeys: String, CodingKey {
         case list = "list"
         case totalCount = "total_count"
+        case totalPage = "total_page"
     }
 }
 

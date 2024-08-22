@@ -6,17 +6,23 @@
 //
 
 import Foundation
-class SearchViewModel: ObservableObject{
+
+enum ProfileKeyError: Error{
+    case isNil
+}
+
+class SearchStore: ObservableObject{
     
     @Published var searchModel = SearchModel(keyword: "", pageCurrent: 1, perPage: 20)
     @Published var searchList : [MemberData] = []
     @Published var totalCount = 0
     
     
-    static let shared = SearchViewModel()
+    static let shared = SearchStore()
     private let networkManager = NetworkManager.shared
-    private let loginVM = LoginViewModel.shared
+    private let loginVM = LoginStore.shared
     private let userManager = UserManager.shared
+    private let imageManager = ImageManager.shared
     
     //유저 검색
     private func searchUser() async -> Result<SearchResponse, Error>{
@@ -25,7 +31,7 @@ class SearchViewModel: ObservableObject{
             let params = await networkManager.convertToParameters(model: self.searchModel)
             print("유저검색 파라미터: \(String(describing: params))")
             
-            let response = try await networkManager.request(method: .get, path: "member/list", params: params, of: SearchResponse.self)
+            let response = try await networkManager.request(method: .get,tokenRequired: .yes, path: "member/list", params: params, of: SearchResponse.self)
             
             return .success(response)
             
@@ -62,5 +68,14 @@ class SearchViewModel: ObservableObject{
         case .failure(let error):
             print(error)
         }
+    }
+    
+    
+    func fetchImage() async throws -> String{
+        guard let profileKey = userManager.getCurrentUser().profileKey else{
+            throw ProfileKeyError.isNil
+        }
+        let result = await imageManager.keyToUrl(key: profileKey)
+        return result
     }
 }

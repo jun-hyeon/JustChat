@@ -11,7 +11,7 @@ struct CircleUserItem: View {
     var memberData: MemberData?
     var body: some View {
         VStack{
-            AsyncImage(url: URL(string: memberData?.profileFile ?? "")) { image in
+            AsyncImage(url: URL(string: memberData?.profileKey ?? "")) { image in
                 image
                     .resizable()
                     .scaledToFit()
@@ -40,5 +40,5 @@ struct CircleUserItem: View {
 }
 
 #Preview {
-    CircleUserItem(memberData: MemberData(memberID: "aaa", memberName: "aaa", nickName: "aaa", profileFile: "aaa"))
+    CircleUserItem(memberData: MemberData(memberID: "aaa", memberName: "aaa", nickName: "aaa",profileUrl: "" ,profileKey: "aaa" ))
 }
