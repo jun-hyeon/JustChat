@@ -7,11 +7,11 @@
 
 import Foundation
 
-class ChattingViewModel: ObservableObject{
+class ChattingStore: ObservableObject{
     
     @Published var messages = [ChatModel]()
     
-    static let shared = ChattingViewModel()
+    static let shared = ChattingStore()
     
     private let wsManager = WebsocketManager.shared
     private var isActive = false

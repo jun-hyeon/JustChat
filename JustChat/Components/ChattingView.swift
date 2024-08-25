@@ -12,7 +12,7 @@ struct ChattingView: View {
     
     private let loginData = UserManager.shared.getCurrentUser()
     @Environment(\.scenePhase) private var phase
-    @StateObject var chatVM = ChattingViewModel()
+    @StateObject var chatVM = ChattingStore()
     
     @State private var text = ""
     @State private var isChat = true
