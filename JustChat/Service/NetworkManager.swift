@@ -72,8 +72,8 @@ actor NetworkManager{
         }
         print(baseurl)
             
-//        let url = "http://" + baseurl + "/" + path
-        let url = "http://" + "118.46.197.26:3380" + "/" + path
+        let url = "http://" + baseurl + "/" + path
+        
         
         return try await withCheckedThrowingContinuation { continuation in
             AF.request(url,
