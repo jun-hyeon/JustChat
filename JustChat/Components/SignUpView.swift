@@ -155,9 +155,10 @@ struct SignUpView: View {
                             .overlay {
                                 RoundedRectangle(cornerRadius: 8).stroke(.black)
                             }
+                            .textInputAutocapitalization(.never)
                             .onChange(of: signUpPwd){
                                 isPwdError = signUpPwd.count < 4 ? true : false
-                            }.textInputAutocapitalization(.never)
+                            }
                         
                         Text("2자이상 입력해주세요.")
                             .font(.caption)
@@ -174,6 +175,7 @@ struct SignUpView: View {
                             .overlay {
                                 RoundedRectangle(cornerRadius: 8).stroke(.black)
                             }
+                            .textInputAutocapitalization(.never)
                             .onChange(of: checkPwd){
                                 isPwdCheckError = signUpPwd != checkPwd ? true : false
                             }

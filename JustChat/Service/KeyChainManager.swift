@@ -45,7 +45,7 @@ class KeyChainManager{
         }
         
         if status == errSecItemNotFound{
-            print("The token was not found in keychain")
+            print("The token was not found in keychain : READ")
             return nil
         }else{
             print("Error getting token from keychain: \(status)")
@@ -66,7 +66,7 @@ class KeyChainManager{
         
         let status = SecItemUpdate(keychainItem as CFDictionary, attributes as CFDictionary)
         guard status != errSecItemNotFound else{
-            print("The token was not found in keychain")
+            print("The token was not found in keychain : UPDATE")
             return false
         }
         
@@ -88,7 +88,7 @@ class KeyChainManager{
         
         let status = SecItemDelete(keychainItem as CFDictionary)
         guard status != errSecItemNotFound else{
-            print("The token was not found in keychain")
+            print("The token was not found in keychain : DELETE")
             return false
         }
         guard status == errSecSuccess else{

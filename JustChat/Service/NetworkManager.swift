@@ -47,6 +47,7 @@ actor NetworkManager{
                 "Accept" : "application/json",
                 "authorization" : "Bearer \(user.accessToken)"
             ]
+            print("TOKEN \(user.accessToken)")
             
         case .no:
             headers = [
@@ -73,7 +74,7 @@ actor NetworkManager{
         print(baseurl)
             
         let url = "http://" + baseurl + "/" + path
-        
+
         
         return try await withCheckedThrowingContinuation { continuation in
             AF.request(url,

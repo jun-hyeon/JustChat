@@ -25,7 +25,7 @@ class ImageManager{
         
         do{
             let params = await networkManager.convertToParameters(model: FileDownloadModel(key: key))
-            let response = try await networkManager.request(method: .post, tokenRequired: .no, path: "file/download", params: params, of: FileDownloadResponse.self)
+            let response = try await networkManager.request(method: .post, tokenRequired: .yes, path: "file/download", params: params, of: FileDownloadResponse.self)
             return .success(response)
             
         }catch{

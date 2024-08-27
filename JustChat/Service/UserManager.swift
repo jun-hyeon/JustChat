@@ -54,6 +54,12 @@ class UserManager{
             }
             print("액세스 토큰 저장 성공")
             print("액세스 토큰 \(keyManager.read(forAccount: accessToken) ?? "")")
+        }else{
+            guard keyManager.storeData(token: loginData.accessToken, forAccount: accessToken) else{
+                print("토큰 저장 실패")
+                return
+            }
+            print("토큰 저장 성공")
         }
         
         if (keyManager.read(forAccount: refreshToken) != nil){
@@ -68,6 +74,12 @@ class UserManager{
             }
             print("리프레시 토큰 저장 성공")
             print("리프레시 토큰 \(keyManager.read(forAccount: refreshToken) ?? "")")
+        }else{
+           guard keyManager.storeData(token: loginData.refreshToken, forAccount: refreshToken) else{
+                print("토큰 저장 실패")
+                return
+            }
+            print("토큰 저장 성공")
         }
         
         
