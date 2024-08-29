@@ -16,7 +16,7 @@
 ## 사용한 언어 및 라이브러리 및 라이브러리
  * Language: Swift5
  * Library: SwiftUI, Alamofire
- * PhotosPicker, Userdefaults, keychain, http통신
+ * 기능: PhotosPicker, Userdefaults, keychain, http통신
 
 ## 제작의도
 웹소켓을 통한 통신 기능을 사용해보고 싶어서 만들게 되었습니다.
