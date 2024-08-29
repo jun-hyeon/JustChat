@@ -15,7 +15,8 @@
 
 ## 사용한 언어 및 라이브러리 및 라이브러리
  * Language: Swift5
- * Library: SwiftUI, Alamofire
+ * Interface: SwiftUI
+ * Library: Alamofire
  * 기능: PhotosPicker, Userdefaults, keychain, http통신
 
 ## 제작의도
